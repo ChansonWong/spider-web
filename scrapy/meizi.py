@@ -125,7 +125,13 @@ class DownPic(threading.Thread):
                             continue
                         else:
                             try:
-                                response = requests.get(pic, headers=headers)
+                                # 增加重连次数
+                                requests.adapters.DEFAULT_RETRIES = 5
+                                s = requests.session()
+                                # 关闭多余连接
+                                s.keep_alive = False
+                                print("正在下载图片：" + pic)
+                                response = s.get(pic, headers=headers)
                                 with open(filename, 'wb') as f:
                                     f.write(response.content)
                                     f.close
